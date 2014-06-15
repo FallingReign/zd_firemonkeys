@@ -1,4 +1,14 @@
-section .logo {
+section .rr3 {
+	background-image: app-asset-url("rr3-logo.png");
+	background-color: #333;
+	background-repeat: no-repeat;
+	background-size: 70px 70px;
+	float: right;
+	height: 70px;
+	width: 70px;
+}
+
+section .sfp {
 	background-image: app-asset-url("sfp-logo.png");
 	background-color: #333;
 	background-repeat: no-repeat;
@@ -28,7 +38,40 @@ section .content {
 	margin-bottom: 10px;
 }
 
-.search input {
+#searchText {
 	height: 10px;
-	width: 240px;
+	width: 250px;
+}
+
+#submit {
+	height: 25px;
+	width: 50px;
+}
+
+.ui-autocomplete-category {
+    font-weight: bold;
+    padding: .2em .4em;
+    margin: .8em 0 .2em;
+    line-height: 1.5;
+}
+
+.custom-combobox {
+    position: relative;
+    display: inline-block;
+}
+.custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+    /* support: IE7 */
+    *height: 1.7em;
+    *top: 0.1em;
+}
+.custom-combobox-input {
+	height: 10px;
+	width: 250px;
+    margin: 0;
+    padding: 0.3em;
 }
