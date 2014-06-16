@@ -1,0 +1,206 @@
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+		function addToList() {
+			var list = document.getElementById('packages');
+			var itemName = document.getElementById('searchText').value;
+			var entry = document.createElement('li');
+			entry.appendChild(document.createTextNode(itemName));
+			list.appendChild(entry);
+		}
+	    $.widget( "custom.catcomplete", $.ui.autocomplete, {
+	      _renderMenu: function( ul, items ) {
+	        var that = this,
+	          currentCategory = "";
+	        $.each( items, function( index, item ) {
+	          if ( item.category != currentCategory ) {
+	            ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+	            currentCategory = item.category;
+	          }
+	          that._renderItemData( ul, item );
+	        });
+	      }
+	    });
+		
+		$(function () {
+			var availableTags = [
+				  { label: "Handfull", category: "Lifepoints" },
+			      { label: "Bucket", category: "Lifepoints" },
+			      { label: "Box", category: "Lifepoints" },
+			      { label: "Barrow", category: "Lifepoints" },
+			      { label: "Carload", category: "Lifepoints" },
+			      { label: "Truckload", category: "Lifepoints" },
+				  { label: "Boatload", category: "Lifepoints" },
+				  { label: "Handfull", category: "Simoleons" }
+			];
+			$("#searchText").catcomplete({
+				source: availableTags
+			});
+		});
+		
+	  (function( $ ) {
+	    $.widget( "custom.combobox", {
+	      _create: function() {
+	        this.wrapper = $( "<span>" )
+	          .addClass( "custom-combobox" )
+	          .insertAfter( this.element );
+ 
+	        this.element.hide();
+	        this._createAutocomplete();
+	        this._createShowAllButton();
+	      },
+ 
+	      _createAutocomplete: function() {
+	        var selected = this.element.children( ":selected" ),
+	          value = selected.val() ? selected.text() : "";
+ 
+	        this.input = $( "<input>" )
+	          .appendTo( this.wrapper )
+	          .val( value )
+	          .attr( "title", "" )
+	          .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left" )
+	          .autocomplete({
+	            delay: 0,
+	            minLength: 0,
+	            source: $.proxy( this, "_source" )
+	          })
+	          .tooltip({
+	            tooltipClass: "ui-state-highlight"
+	          });
+ 
+	        this._on( this.input, {
+	          autocompleteselect: function( event, ui ) {
+	            ui.item.option.selected = true;
+	            this._trigger( "select", event, {
+	              item: ui.item.option
+	            });
+	          },
+ 
+	          autocompletechange: "_removeIfInvalid"
+	        });
+	      },
+ 
+	      _createShowAllButton: function() {
+	        var input = this.input,
+	          wasOpen = false;
+ 
+	        $( "<a>" )
+	          .attr( "tabIndex", -1 )
+	          .attr( "title", "Show All Items" )
+	          .tooltip()
+	          .appendTo( this.wrapper )
+	          //.button({
+	          //  text: false
+	          //}) 
+	          .removeClass( "ui-corner-all" )
+	          .addClass( "custom-combobox-toggle ui-corner-right" )
+	          .mousedown(function() {
+	            wasOpen = input.autocomplete( "widget" ).is( ":visible" );
+	          })
+	          .click(function() {
+	            input.focus();
+ 
+	            // Close if already visible
+	            if ( wasOpen ) {
+	              return;
+	            }
+ 
+	            // Pass empty string as value to search for, displaying all results
+	            input.autocomplete( "search", "" );
+	          });  
+	      },
+ 
+	      _source: function( request, response ) {
+	        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+	        response( this.element.children( "option" ).map(function() {
+	          var text = $( this ).text();
+	          if ( this.value && ( !request.term || matcher.test(text) ) )
+	            return {
+	              label: text,
+	              value: text,
+	              option: this
+	            };
+	        }) );
+	      },
+ 
+	      _removeIfInvalid: function( event, ui ) {
+ 
+	        // Selected an item, nothing to do
+	        if ( ui.item ) {
+	          return;
+	        }
+ 
+	        // Search for a match (case-insensitive)
+	        var value = this.input.val(),
+	          valueLowerCase = value.toLowerCase(),
+	          valid = false;
+	        this.element.children( "option" ).each(function() {
+	          if ( $( this ).text().toLowerCase() === valueLowerCase ) {
+	            this.selected = valid = true;
+	            return false;
+	          }
+	        });
+ 
+	        // Found a match, nothing to do
+	        if ( valid ) {
+	          return;
+	        }
+ 
+	        // Remove invalid value
+	        this.input
+	          .val( "" )
+	          .attr( "title", value + " didn't match any item" )
+	          .tooltip( "open" );
+	        this.element.val( "" );
+	        this._delay(function() {
+	          this.input.tooltip( "close" ).attr( "title", "" );
+	        }, 2500 );
+	        this.input.data( "ui-autocomplete" ).term = "";
+	      },
+ 
+	      _destroy: function() {
+	        this.wrapper.remove();
+	        this.element.show();
+	      }
+	    });
+	  }( jQuery ));
+ 
+	  $(function() {
+	    $( "#combobox" ).combobox();
+	  });
+	  </script>
+<section id="header">
+<span class="sfp"/>
+<div class="content">
+	<ul>
+		<li>
+			<strong>Cloudcell:</strong> &nbsp <a href="https://0036-administrate.cloudcell.com/GiftList.php?nMemberId={{player_id}}" target="{{game}}"> {{player_id}} </a>
+		</li>
+		<li>
+			<strong>Level: &nbsp </strong> <input type="text" name="sim_level"> &nbsp
+			<strong>Sims: &nbsp </strong> <input type="text" name="sim_count"> 
+		</li>
+	</ul>
+</div>
+</section>
+
+<section id="search">
+<div class="search">
+	<ul>
+		<li>
+			<input id="searchText" type="text"/>
+			<input id="submit" onclick='addToList()'type="submit" value="Submit">
+		</li>
+	</ul>
+	
+	<!-- combobox -->
+	<div class="ui-widget">
+	  <select id="combobox">
+	    <option value="">Select one...</option>
+	    <option value="Handfull">ActionScript</option>
+	    <option value="Handfull">Handfull</option>
+	  </select>
+	</div>
+	
+	<ul id="packages"></ul>
+</div>
+</section>

@@ -1,0 +1,21 @@
+<section id="header">
+<span class="rr3"/>
+<div class="content">
+	<ul>
+		<li>
+			<strong>Cloudcell:</strong> &nbsp <a href="https://0036-administrate.cloudcell.com/GiftList.php?nMemberId={{player_id}}" target="{{game}}"> {{player_id}} </a>
+		</li>
+	</ul>
+</div>
+</section>
+
+<section id="search">
+<div class="search">
+	<ul>
+		<li>
+			<input id="searchText" type="text"/>
+			<input id="submit" type="submit" value="Submit">
+		</li>
+	</ul>
+</div>
+</section>
