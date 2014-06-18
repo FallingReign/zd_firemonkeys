@@ -8,9 +8,9 @@
     },
 
     reimbursement_list: [{
-		name					: 'Temp',
+		item_name				: 'Temp',
 		qty						: 456
-	}] ,
+	}],
 	
 
     events: {
@@ -18,7 +18,6 @@
 		'ticket.custom_field_22553724.changed'    : 'update',
 		'ticket.custom_field_22717170.changed'    : 'update',
 		'click #submit'							  : 'addToList' ,
-		'click #test-input'						  : 'showAutocomplete' 
     },
 
 	update: function() {
@@ -29,12 +28,8 @@
 		this.renderContent();
 	},
 
-	showAutocomplete: function() {
-		this.$('#test-input').autocomplete( "search", this.$('#test-input').val() );
-	},
-
     renderContent: function() {
-    	this.switchTo('content', this.ticket_data);
+    	this.switchTo('content', this.ticket_data, this.reimbursement_list);
     	this.$("#logo").css("background-image", "url('/api/v2/apps/35120/assets/" + this.ticket_data.logo + "')");
     	this.$('#searchText').autocomplete({
 		    source: ['test','test2'],
@@ -43,7 +38,7 @@
     },
 	
 	addToList: function() {
-		this.reimbursement_list.push({name:this.$('#searchText').val(), qty: 1});
+		this.reimbursement_list.push({item_name:this.$('#searchText').val(), qty: 1});
 		this.renderContent();
 	}
 	

@@ -20,9 +20,8 @@
 			</li>
 		</ul>
 		<ul>
-			{{#each reimbursement_list}}
-				<li>{{name}}</li>
-			{{/each}}
+			<li>test</li>
+			<li>{{item_name}}</li>
 		</ul>
 	</div>
 </section>
