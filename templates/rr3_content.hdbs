@@ -10,12 +10,5 @@
 </section>
 
 <section id="search">
-<div class="search">
-	<ul>
-		<li>
-			<input id="searchText" type="text"/>
-			<input id="submit" type="submit" value="Submit">
-		</li>
-	</ul>
-</div>
+	<input id="test-input" type="text" placeholder="input" value="testing">
 </section>

@@ -1,5 +1,6 @@
-(function() {
 
+
+(function() {
   return {
 
   	custom_field: {
@@ -13,39 +14,43 @@
 		player_id               : 'none'
     },
 
+    reimbursement_list: [{
+		name			: 'Temp',
+		qty				: 456
+	}] ,
+
     events: {
-    	'app.activated'						      : 'init',
-		'ticket.custom_field_22553724.changed'    : 'init',
-		'ticket.custom_field_22717170.changed'    : 'init',
-		'click .submit'							  : 'addToList' 
-		 
+    	'app.activated'						      : 'update',
+		'ticket.custom_field_22553724.changed'    : 'update',
+		'ticket.custom_field_22717170.changed'    : 'update',
+		'click #submit'							  : 'addToList' ,
+		'click #test-input'						  : 'showAutocomplete' 
     },
 
-	init: function() {
+	update: function() {
 		this.ticket_data.game = this.ticket().customField("custom_field_" + this.custom_field.game_id);
-        this.ticket_data.logo = this.ticket().customField("custom_field_" + this.custom_field.game_id) + "-logo.png";
+        this.ticket_data.logo = this.ticket().customField("custom_field_" + this.custom_field.game_id) + "-logo";
 		this.ticket_data.player_id = this.ticket().customField("custom_field_" + this.custom_field.player_id);
-		
-		if (this.ticket_data.game == 'rr3'){
-			this.renderRR3Content();
-		} else if (this.ticket_data.game == 'sfp'){
-			this.renderSFPContent();
-		} else {
 
-		};
-		
-    },
+		this.renderContent();
+	},
 
-    renderRR3Content: function() {
-    	this.switchTo('rr3_content', this.ticket_data);
-    },
-	
-    renderSFPContent: function() {
-    	this.switchTo('sfp_content', this.ticket_data);
+	showAutocomplete: function() {
+		this.$('#test-input').autocomplete( "search", this.$('#test-input').val() );
+	},
+
+    renderContent: function() {
+    	this.switchTo('content', this.ticket_data);
+    	this.$("#logo").addClass( this.ticket_data.logo );
+
+    	this.$('#searchText').autocomplete({
+		    source: ['test','test2'],
+   			minLength: 0,
+	    });
     },
 	
 	addToList: function() {
-		alert("test");
+		this.reimbursement_list.push({name:this.$('#searchText').val(), qty: 1});
 	}
 	
   };
