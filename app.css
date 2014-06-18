@@ -7,11 +7,11 @@ section #logo {
 	width: 70px;
 }
 .sfp-logo {
-	background-image: app-asset-url("sfp-logo.png");
+	background-image: app-asset-url('sfp-logo.png');
 }
 
 .rr3-logo {
-	background-image: app-asset-url("rr3-logo.png");
+	background-image: app-asset-url('rr3-logo.png');
 }
 
 section ul, li{

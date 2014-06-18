@@ -19,5 +19,10 @@
 				<input id="submit" type="submit" value="Submit">
 			</li>
 		</ul>
+		<ul>
+			{{#each reimbursement_list}}
+				<li>{{name}}</li>
+			{{/each}}
+		</ul>
 	</div>
 </section>

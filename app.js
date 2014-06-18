@@ -1,12 +1,5 @@
-
-
 (function() {
   return {
-
-  	custom_field: {
-    	game_id  				: '22553724',
-    	player_id  				: '22717170'
-    },
 
     ticket_data: {
 		game                    : 'none',
@@ -15,9 +8,10 @@
     },
 
     reimbursement_list: [{
-		name			: 'Temp',
-		qty				: 456
+		name					: 'Temp',
+		qty						: 456
 	}] ,
+	
 
     events: {
     	'app.activated'						      : 'update',
@@ -28,10 +22,10 @@
     },
 
 	update: function() {
-		this.ticket_data.game = this.ticket().customField("custom_field_" + this.custom_field.game_id);
-        this.ticket_data.logo = this.ticket().customField("custom_field_" + this.custom_field.game_id) + "-logo";
-		this.ticket_data.player_id = this.ticket().customField("custom_field_" + this.custom_field.player_id);
-
+		this.ticket_data.game = this.ticket().customField("custom_field_" + this.setting('field_game'));
+        this.ticket_data.logo = this.ticket_data.game + "-logo.png";
+		this.ticket_data.player_id = this.ticket().customField("custom_field_" + this.setting('field_player_id'));
+		
 		this.renderContent();
 	},
 
@@ -41,8 +35,7 @@
 
     renderContent: function() {
     	this.switchTo('content', this.ticket_data);
-    	this.$("#logo").addClass( this.ticket_data.logo );
-
+    	this.$("#logo").css("background-image", "url('/api/v2/apps/35120/assets/" + this.ticket_data.logo + "')");
     	this.$('#searchText').autocomplete({
 		    source: ['test','test2'],
    			minLength: 0,
@@ -51,6 +44,7 @@
 	
 	addToList: function() {
 		this.reimbursement_list.push({name:this.$('#searchText').val(), qty: 1});
+		this.renderContent();
 	}
 	
   };
