@@ -1,13 +1,20 @@
 <section id="header">
 	<span id="logo"/>
 	<ul>
+		{{#if sfp}}
 		<li>
-			<strong>Cloudcell:</strong> &nbsp <a href="https://0036-administrate.cloudcell.com/GiftList.php?nMemberId={{player_id}}" target="{{game}}"> {{player_id}} </a>
+			<strong>Cloudcell:</strong> &nbsp; <a href="https://0036-administrate.cloudcell.com/GiftList.php?nMemberId={{player_id}}" target="{{game}}"> {{player_id}} </a>
 		</li>
 		<li>
-			<strong>Level: &nbsp </strong> <input type="text" name="sim_level"> &nbsp
-			<strong>Sims: &nbsp </strong> <input type="text" name="sim_count"> 
+			<strong>Level: &nbsp; </strong> <input type="text" name="sim_level"> &nbsp;
+			<strong>Sims: &nbsp; </strong> <input type="text" name="sim_count"> 
 		</li>
+		{{/if}}
+		{{#if rr3}}
+		<li>
+			<strong>Cloudcell:</strong> &nbsp; <a href="https://0037-administrate.cloudcell.com/GiftList.php?nMemberId={{player_id}}" target="{{game}}"> {{player_id}} </a>
+		</li>
+		{{/if}}
 	</ul>
 </section>
 
@@ -20,8 +27,9 @@
 			</li>
 		</ul>
 		<ul>
-			<li>test</li>
-			<li>{{item_name}}</li>
+			{{#each reimbursement_list}}
+			<li>{{item_name}}{{qty}}</li>
+			{{/each}}
 		</ul>
 	</div>
 </section>
