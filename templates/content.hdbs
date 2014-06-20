@@ -1,5 +1,6 @@
 <section id="header">
-	<span id="logo"/>
+	<img id="logo" src="{{assetURL logo}}" />
+
 	<ul>
 		{{#if sfp}}
 		<li>
