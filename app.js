@@ -1,23 +1,34 @@
 (function() {
   return {
 
-    ticket_data: {
-		game                    : 'null',
-        logo                    : 'null',
-		player_id               : 'null',
-		sfp						: 'null',
-		rr3						: 'null',
-		regex					: /\d+/,
+    resources: {
+		GAME                    : 'null',
+        LOGO                    : 'null',
+		PLAYER_ID               : 'null',
+		SFP						: 'null',
+		RR3						: 'null',
+		REGEX					: /\d+/,
+		parsed_simoleons		: '',
+		parsed_lifepoints		: '',
+		parsed_socialpoints		: '',
 		reimbursement_list      : [{
 			item_name				: '',
 			qty						: ''
+		}],
+		simoleon_packs			: [{
+			level					: '',
+			item_name				: '',
+			item_value				: ''
+		}],
+		lifepoint_packs			: [{
+			item_name				: '',
+			item_value				: ''
+		}],
+		socialpoint_packs			: [{
+			item_name				: '',
+			item_value				: ''
 		}]
 
-    },
-
-    purchase_data: {
-    	csv 					: "level,handful,bucket\n1,100,200\n2,200,400\n3,300,600",
-		parsed					: ''
     },
 
     events: {
@@ -29,29 +40,34 @@
 
     init: function() {
     	this.update();
-    	this.purchase_data.parsed = this.csvToJSON(this.setting('purchase_simoleons'));
-    	alert(this.purchase_data.parsed);
+    	this.resources.parsed_simoleons = this.csvToJSON(this.setting('purchase_simoleons'));
+    	this.resources.parsed_lifepoints = this.csvToJSON(this.setting('purchase_lifepoints'));
+    	this.resources.parsed_socialpoints = this.csvToJSON(this.setting('purchase_socialpoints'));
+		this.complexArray(this.resources.parsed_simoleons, this.resources.simoleon_packs);
+		this.simpleArray(this.resources.parsed_lifepoints, this.resources.lifepoint_packs);
+		this.simpleArray(this.resources.parsed_socialpoints, this.resources.socialpoint_packs);
+		
     },
 
 	update: function() {
-		this.ticket_data.game = this.ticket().customField("custom_field_" + this.setting('field_game'));
-        this.ticket_data.logo = this.ticket_data.game + "-logo.png";
-		this.ticket_data.player_id = this.ticket_data.regex.exec(this.ticket().customField("custom_field_" + this.setting('field_player_id')));
+		this.resources.GAME = this.ticket().customField("custom_field_" + this.setting('field_game'));
+        this.resources.LOGO = this.resources.GAME + "-logo.png";
+		this.resources.PLAYER_ID = this.resources.REGEX.exec(this.ticket().customField("custom_field_" + this.setting('field_player_id')));
 
-		if (this.ticket_data.game == 'sfp') {
-			this.ticket_data.sfp = "true";
-			this.ticket_data.rr3 = "";
-		} else if (this.ticket_data.game == 'rr3') {
-			this.ticket_data.rr3 = "true";
-			this.ticket_data.sfp = "";
+		if (this.resources.GAME == 'sfp') {
+			this.resources.SFP = "true";
+			this.resources.RR3 = "";
+		} else if (this.resources.GAME == 'rr3') {
+			this.resources.RR3 = "true";
+			this.resources.SFP = "";
 		} else {
 
 		};
 		this.renderContent();
 	},
 
-    renderContent: function() {
-    	this.switchTo('content', this.ticket_data);
+    renderContent: function() {				
+    	this.switchTo('content', this.resources);
     	this.$('#searchText').autocomplete({
 		    source: ['test','test2'],
    			minLength: 0,
@@ -59,14 +75,14 @@
     },
 	
 	addToList: function() {
-		for (index = 0; index < this.ticket_data.reimbursement_list.length; ++index) {
-			if (this.ticket_data.reimbursement_list[index].item_name == this.$('#searchText').val()){
-				++this.ticket_data.reimbursement_list[index].qty;
+		for (index = 0; index < this.resources.reimbursement_list.length; ++index) {
+			if (this.resources.reimbursement_list[index].item_name == this.$('#searchText').val()){
+				++this.resources.reimbursement_list[index].qty;				
 				this.renderContent();
 				return;
 			};
 		};
-		this.ticket_data.reimbursement_list.push({item_name:this.$('#searchText').val(), qty: 1});
+		this.resources.reimbursement_list.push({item_name:this.$('#searchText').val(), qty: 1});
 		this.renderContent();
 	},
 
@@ -134,9 +150,37 @@
 	    }
 
 	    var json = JSON.stringify(objArray);
-	    var str = json.replace(/},/g, "},\r\n");
+	    var str = json.replace(/ },/g, "},\r\n");
 
-	    return str;
+	    return objArray;
+	},
+	
+	complexArray: function(target, arr) {
+		var json = target;
+		var keys = Object.keys(json);
+		keys.forEach(function(index) {
+			var key = Object.keys(json[index]);
+			key.forEach(function(item) {
+				var val = json[index][item];
+				var num = parseInt(index);
+				++num;
+				arr.push({level:num, item_name:item, item_value:parseInt(val)});
+			});
+		});
+		
+	},
+	
+	simpleArray: function(target, arr) {
+		var json = target;
+		var keys = Object.keys(json);
+		keys.forEach(function(index) {
+			var key = Object.keys(json[index]);
+			key.forEach(function(item) {
+				var val = json[index][item];
+				arr.push({item_name:item, item_value:parseInt(val)});
+			});
+		});
+		
 	}
 	
   };
