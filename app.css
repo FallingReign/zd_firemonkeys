@@ -9,7 +9,7 @@ section ul, li{
 	margin-left: 0px;
 }
 
-section ul>:first-child {
+#header ul>:first-child {
 	padding-bottom: 10px;
 }
 
@@ -24,13 +24,19 @@ section input {
 	margin-bottom: 10px;
 }
 
-#searchText {
+#searchText, #resultText {
 	height: 10px;
 	width: 250px;
 }
 
-#submit {
+#submit, #clear {
 	height: 25px;
 	width: 50px;
 }
 
+.reimbursement_list {
+	width: 250px;
+}
+.float_right {
+	float: right;
+}

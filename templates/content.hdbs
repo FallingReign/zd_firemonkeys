@@ -7,8 +7,8 @@
 			<strong>Cloudcell:</strong> &nbsp; <a href="https://0036-administrate.cloudcell.com/GiftList.php?nMemberId={{PLAYER_ID}}" target="{{GAME}}"> {{PLAYER_ID}} </a>
 		</li>
 		<li>
-			<strong>Level: &nbsp; </strong> <input type="text" name="sim_level"> &nbsp;
-			<strong>Sims: &nbsp; </strong> <input type="text" name="sim_count"> 
+			<strong>Level: &nbsp; </strong> <input type="text" id="sim_level" value="{{LEVEL}}"> &nbsp;
+			<strong>Sims: &nbsp; </strong> <input type="text" id="sim_count"> 
 		</li>
 		{{/if}}
 		{{#if RR3}}
@@ -24,13 +24,19 @@
 		<ul>
 			<li>
 				<input id="searchText" type="text"/>
-				<input id="submit" type="submit" value="Submit">
+				<input id="submit" type="submit" value="Submit"/>
 			</li>
 		</ul>
+	</div>
+	<div class="reimbursement_list">
 		<ul>
 			{{#each reimbursement_list}}
-			<li>{{item_name}}{{qty}}</li>
+			<li>{{item_name}}<span class="float_right">{{qty}}</span></li>
 			{{/each}}
 		</ul>
+	</div>
+	<div>
+		<input id="resultText" type="text" value="{{RESULT}}"/>
+		<input class="float_right" id="clear" type="button" value="Clear"/>
 	</div>
 </section>

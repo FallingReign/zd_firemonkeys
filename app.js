@@ -5,29 +5,17 @@
 		GAME                    : 'null',
         LOGO                    : 'null',
 		PLAYER_ID               : 'null',
-		SFP						: 'null',
-		RR3						: 'null',
+		LEVEL 					: '',
+		RESULT 					: 'test',
+		SFP						: '',
+		RR3						: '',
 		REGEX					: /\d+/,
-		parsed_simoleons		: '',
-		parsed_lifepoints		: '',
-		parsed_socialpoints		: '',
-		reimbursement_list      : [{
-			item_name				: '',
-			qty						: ''
+		purchase_data			: [{
+			'simoleons'			: '',
+			'lifepoints'		: '',
+			'socialpoints'		: ''
 		}],
-		simoleon_packs			: [{
-			level					: '',
-			item_name				: '',
-			item_value				: ''
-		}],
-		lifepoint_packs			: [{
-			item_name				: '',
-			item_value				: ''
-		}],
-		socialpoint_packs			: [{
-			item_name				: '',
-			item_value				: ''
-		}]
+		reimbursement_list      : []
 
     },
 
@@ -35,56 +23,168 @@
     	'app.activated'						      			: 'init',
 		'ticket.custom_field_{{field_game}}.changed'    	: 'update',
 		'ticket.custom_field_{{field_player_id}}.changed'   : 'update',
-		'click #submit'							  			: 'addToList' 
+		'click #submit'							  			: 'addToList',
+		'click #clear'										: 'clearList'
     },
 
     init: function() {
     	this.update();
-    	this.resources.parsed_simoleons = this.csvToJSON(this.setting('purchase_simoleons'));
-    	this.resources.parsed_lifepoints = this.csvToJSON(this.setting('purchase_lifepoints'));
-    	this.resources.parsed_socialpoints = this.csvToJSON(this.setting('purchase_socialpoints'));
-		this.complexArray(this.resources.parsed_simoleons, this.resources.simoleon_packs);
-		this.simpleArray(this.resources.parsed_lifepoints, this.resources.lifepoint_packs);
-		this.simpleArray(this.resources.parsed_socialpoints, this.resources.socialpoint_packs);
+    	// Parse csv data in the settings into JSON object.
+    	// This allows the modification of the package information 
+    	// without having to update app.
+    	this.resources.purchase_data.simoleons = this.csvToJSON(this.setting('purchase_simoleons'));
+    	this.resources.purchase_data.lifepoints = this.csvToJSON(this.setting('purchase_lifepoints'));
+    	this.resources.purchase_data.socialpoints = this.csvToJSON(this.setting('purchase_socialpoints'));
+
+    	//alert($('#resultText'));
+    	this.$('#resultText').attr("disabled", true);
+    	this.$('#clear').attr("disabled", true);
 		
     },
 
 	update: function() {
+		// Determine which game ticket is for. Changes dynamically when
+		// field is changed. Also sets the logo for appropriate game.
+		// Updates the Player ID dynamically as well.
 		this.resources.GAME = this.ticket().customField("custom_field_" + this.setting('field_game'));
         this.resources.LOGO = this.resources.GAME + "-logo.png";
 		this.resources.PLAYER_ID = this.resources.REGEX.exec(this.ticket().customField("custom_field_" + this.setting('field_player_id')));
 
+		// Sets value of game to true to display game specific content
+		// Kind of sloppy, want to find better way
 		if (this.resources.GAME == 'sfp') {
 			this.resources.SFP = "true";
-			this.resources.RR3 = "";
+			this.resources.RR3 = '';
 		} else if (this.resources.GAME == 'rr3') {
 			this.resources.RR3 = "true";
-			this.resources.SFP = "";
+			this.resources.SFP = '';
 		} else {
 
 		};
+
 		this.renderContent();
 	},
 
+	clearList: function () {
+		this.resources.reimbursement_list = [{}];
+		this.update();
+		this.$('#resultText').attr("disabled", true);
+    	this.$('#clear').attr("disabled", true);
+
+	},
+
+
     renderContent: function() {				
     	this.switchTo('content', this.resources);
-    	this.$('#searchText').autocomplete({
-		    source: ['test','test2'],
-   			minLength: 0,
-	    });
+
+    	//this.$('#sim_level').text = "test"; // (this.resources.LEVEL > 0? this.resources.LEVEL : '');
+
+    	if (this.resources.GAME == 'sfp') {
+	    	this.$('#searchText').autocomplete({
+			    source: ['Handful of Simoleons',
+			    		 'Pile of Simoleons',
+			    		 'Piggybank of Simoleons',
+			    		 'Sack of Simoleons',
+			    		 'Trunk of Simoleons',
+			    		 'Bank of Simoleons',
+			    		 'Treasury of Simoleons',
+			    		 'Handful of Lifepoints',
+			    		 'Bucket of Lifepoints',
+			    		 'Box of Lifepoints',
+			    		 'Barrow of Lifepoints',
+			    		 'Carload of Lifepoints',
+			    		 'Truckload of Lifepoints',
+			    		 'Boatload of Lifepoints',
+			    		 'Handful of Socialpoints',
+			    		 'Assortment of Socialpoints',
+			    		 'Birthday Cake of Socialpoints',
+			    		 'Pinata of Socialpoints',
+			    		 'Shipping Crate of Socialpoints',
+			    		 'Swimming Pool of Socialpoints',
+			    		 'Plane of Socialpoints'],
+	   			minLength: 0,
+		    });
+	    } else if (this.resources.GAME == 'rr3') {
+	    	this.$('#searchText').autocomplete({
+			    source: ['Handful of Gold',
+			    		 'Pocketful of Gold',
+			    		 'Pile of Gold',
+			    		 'Stack of Gold',
+			    		 'Heap of Gold',
+			    		 'Truckload of Gold',
+			    		 'Grey Card',
+			    		 'Blue Card',
+			    		 'Black Card',
+			    		 'Silver Card',
+			    		 'Gold Card',
+			    		 'Platinum Card'],
+	   			minLength: 0,
+	    	});
+	    };
     },
 	
 	addToList: function() {
+		this.$('#resultText').attr("disabled", false);
+    	this.$('#clear').attr("disabled", false);
+		// Adds the searched packs to a list
 		for (index = 0; index < this.resources.reimbursement_list.length; ++index) {
 			if (this.resources.reimbursement_list[index].item_name == this.$('#searchText').val()){
-				++this.resources.reimbursement_list[index].qty;				
-				this.renderContent();
-				return;
+				++this.resources.reimbursement_list[index].qty;		
+				this.renderContent(this.resources.reimbursement_list);
+				break;
 			};
 		};
-		this.resources.reimbursement_list.push({item_name:this.$('#searchText').val(), qty: 1});
+		var regex = /\w+$/
+		var lastWord = regex.exec(this.$('#searchText').val().toLowerCase());
+
+		regex = /^\w+/
+		var firstWord = regex.exec(this.$('#searchText').val().toLowerCase());
+
+		if (lastWord == 'simoleons') {
+			this.resources.LEVEL = this.$('#sim_level').val();
+		}
+		this.resources.reimbursement_list.push({item_name:this.$('#searchText').val(), type: lastWord, value:this.resources.purchase_data[lastWord][this.resources.LEVEL - 1][firstWord], qty: 1});
+		
 		this.renderContent();
+
+		this.reimResult();
+
 	},
+
+	reimResult: function() {
+		//_.each(this.resources.reimbursement_list, function(e, item){});
+
+		var simoleons, lifepoints, socialpoints;
+
+		_.each(this.resources.reimbursement_list, function(field) {
+      		//console.log(field.item_name);
+      		simoleons += (field.type == "simoleons"? parseInt(field.value) * field.qty : 0 );
+      		lifepoints += (field.type == "lifepoints"? field.value * field.qty : 0 );
+      		socialpoints += (field.type == "socialpoints"? field.value * field.qty : 0 );
+    	});
+
+		if (simoleons)
+		{
+			this.resources.RESULT = "simoleons:" + simoleons;
+		}
+
+		if (lifepoints && simoleons)
+		{
+			this.resources.RESULT = this.resources.RESULT + ", lifepoints:" + lifepoints;
+		} else if (lifepoints) {
+			this.resources.RESULT = this.resources.RESULT + "lifepoints:" + lifepoints;
+		}
+
+		if (socialpoints && (simoleons || lifepoints))
+		{
+			this.resources.RESULT = this.resources.RESULT + ", socialpoints:" + socialpoints;
+		} else if (socialpoints) {
+			this.resources.RESULT = this.resources.RESULT + "socialpoints:" + socialpoints;
+		}
+
+		alert(this.resources.RESULT);
+	},
+
 
 	csvToArray: function(strData, strDelimiter) {
 	    // Check to see if the delimiter is defined. If not,
@@ -149,40 +249,13 @@
 	        }
 	    }
 
+	    
 	    var json = JSON.stringify(objArray);
 	    var str = json.replace(/ },/g, "},\r\n");
 
-	    return objArray;
-	},
-	
-	complexArray: function(target, arr) {
-		var json = target;
-		var keys = Object.keys(json);
-		keys.forEach(function(index) {
-			var key = Object.keys(json[index]);
-			key.forEach(function(item) {
-				var val = json[index][item];
-				var num = parseInt(index);
-				++num;
-				arr.push({level:num, item_name:item, item_value:parseInt(val)});
-			});
-		});
-		
-	},
-	
-	simpleArray: function(target, arr) {
-		var json = target;
-		var keys = Object.keys(json);
-		keys.forEach(function(index) {
-			var key = Object.keys(json[index]);
-			key.forEach(function(item) {
-				var val = json[index][item];
-				arr.push({item_name:item, item_value:parseInt(val)});
-			});
-		});
-		
+	    return JSON.parse(str);
 	}
-	
+
   };
 
 }());
