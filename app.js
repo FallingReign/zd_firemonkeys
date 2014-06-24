@@ -6,17 +6,26 @@
         LOGO                    : 'null',
 		PLAYER_ID               : 'null',
 		LEVEL 					: '',
-		RESULT 					: 'test',
+		RESULT 					: '',
 		SFP						: '',
 		RR3						: '',
 		REGEX					: /\d+/,
 		purchase_data			: [{
-			'simoleons'			: '',
-			'lifepoints'		: '',
-			'socialpoints'		: ''
+			'simoleons'			: [],
+			'lifepoints'		: [],
+			'socialpoints'		: []
 		}],
 		reimbursement_list      : []
 
+    },
+
+    requests: {
+    	'getUser': function(id) {
+	        return {
+	        	url: helpers.fmt("/api/v2/users/%@.json?include=identities,organizations", id),
+	          	dataType: 'json'
+	        };
+	    },
     },
 
     events: {
@@ -24,7 +33,8 @@
 		'ticket.custom_field_{{field_game}}.changed'    	: 'update',
 		'ticket.custom_field_{{field_player_id}}.changed'   : 'update',
 		'click #submit'							  			: 'addToList',
-		'click #clear'										: 'clearList'
+		'click #clear'										: 'clearList',
+        'getUser.done'										: 'afterGetUser',
     },
 
     init: function() {
@@ -36,10 +46,14 @@
     	this.resources.purchase_data.lifepoints = this.csvToJSON(this.setting('purchase_lifepoints'));
     	this.resources.purchase_data.socialpoints = this.csvToJSON(this.setting('purchase_socialpoints'));
 
-    	//alert($('#resultText'));
     	this.$('#resultText').attr("disabled", true);
-    	this.$('#clear').attr("disabled", true);
-		
+	    this.$('#clear').attr("disabled", true);
+
+ 		this.ajax('getUser', this.ticket().requester().id()); // Nick is 465739980
+    },
+
+	afterGetUser: function(data) {
+    	alert(data.user.user_fields[this.resources.GAME + "_ccid"]);
     },
 
 	update: function() {
@@ -66,18 +80,15 @@
 	},
 
 	clearList: function () {
-		this.resources.reimbursement_list = [{}];
+		this.resources.reimbursement_list = [];
 		this.update();
 		this.$('#resultText').attr("disabled", true);
     	this.$('#clear').attr("disabled", true);
 
 	},
 
-
     renderContent: function() {				
     	this.switchTo('content', this.resources);
-
-    	//this.$('#sim_level').text = "test"; // (this.resources.LEVEL > 0? this.resources.LEVEL : '');
 
     	if (this.resources.GAME == 'sfp') {
 	    	this.$('#searchText').autocomplete({
@@ -129,62 +140,45 @@
 		// Adds the searched packs to a list
 		for (index = 0; index < this.resources.reimbursement_list.length; ++index) {
 			if (this.resources.reimbursement_list[index].item_name == this.$('#searchText').val()){
-				++this.resources.reimbursement_list[index].qty;		
-				this.renderContent(this.resources.reimbursement_list);
-				break;
+				++this.resources.reimbursement_list[index].qty;	
+				this.reimResult();	
+				this.renderContent();
+				return;
 			};
 		};
+
 		var regex = /\w+$/
 		var lastWord = regex.exec(this.$('#searchText').val().toLowerCase());
 
 		regex = /^\w+/
 		var firstWord = regex.exec(this.$('#searchText').val().toLowerCase());
 
+		var level = 1;
 		if (lastWord == 'simoleons') {
-			this.resources.LEVEL = this.$('#sim_level').val();
+			level = this.resources.LEVEL = this.$('#sim_level').val();
 		}
-		this.resources.reimbursement_list.push({item_name:this.$('#searchText').val(), type: lastWord, value:this.resources.purchase_data[lastWord][this.resources.LEVEL - 1][firstWord], qty: 1});
-		
-		this.renderContent();
 
+		try {
+			this.resources.reimbursement_list.push({item_name:this.$('#searchText').val(), type: lastWord, value:this.resources.purchase_data[lastWord][level - 1][firstWord], qty: 1});
+		}
+		catch(err) {
+			alert("There was an error adding items: " + err);
+		}
 		this.reimResult();
-
+		this.renderContent();
 	},
 
 	reimResult: function() {
 		//_.each(this.resources.reimbursement_list, function(e, item){});
 
-		var simoleons, lifepoints, socialpoints;
+		var result = [];
 
 		_.each(this.resources.reimbursement_list, function(field) {
-      		//console.log(field.item_name);
-      		simoleons += (field.type == "simoleons"? parseInt(field.value) * field.qty : 0 );
-      		lifepoints += (field.type == "lifepoints"? field.value * field.qty : 0 );
-      		socialpoints += (field.type == "socialpoints"? field.value * field.qty : 0 );
+      		result.push(field.type + ":" + parseInt(field.value) * field.qty);
     	});
 
-		if (simoleons)
-		{
-			this.resources.RESULT = "simoleons:" + simoleons;
-		}
-
-		if (lifepoints && simoleons)
-		{
-			this.resources.RESULT = this.resources.RESULT + ", lifepoints:" + lifepoints;
-		} else if (lifepoints) {
-			this.resources.RESULT = this.resources.RESULT + "lifepoints:" + lifepoints;
-		}
-
-		if (socialpoints && (simoleons || lifepoints))
-		{
-			this.resources.RESULT = this.resources.RESULT + ", socialpoints:" + socialpoints;
-		} else if (socialpoints) {
-			this.resources.RESULT = this.resources.RESULT + "socialpoints:" + socialpoints;
-		}
-
-		alert(this.resources.RESULT);
+		this.resources.RESULT = result.join(", ");
 	},
-
 
 	csvToArray: function(strData, strDelimiter) {
 	    // Check to see if the delimiter is defined. If not,
