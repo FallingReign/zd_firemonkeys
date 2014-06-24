@@ -39,13 +39,25 @@
       "name"            : "purchase_socialpoints",
       "type"            : "text",
       "required"        : true,
-      "default"         : "handful,bucket,box,barrow,carload,truckload,boatload\n15,40,100,250,500,1500,3500"
+      "default"         : "handful,assortment,birthday cake,pinata,shipping crate,swimming pool,plane\n10,52,110,240,320,720,2000"
     }, 
     {
       "name"            : "purchase_special",
       "type"            : "text",
       "required"        : true,
       "default"         : "name,simoleons,lifepoints,socialpoints\ncurrency,piggybank,box,0\n,lotus,0,box,0"
+    },
+    {
+      "name"            : "purchase_gold",
+      "type"            : "text",
+      "required"        : true,
+      "default"         : "handful,pocketful,pile,stack,heap,truckload\n10,30,65,150,400,1000"
+    },
+    {
+      "name"            : "purchase_money",
+      "type"            : "text",
+      "required"        : true,
+      "default"         : "grey,blue,black,silver,gold,platinum\n50000,140000,300000,700000,2000000,5000000"
     }]
 
 }
