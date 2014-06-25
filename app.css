@@ -24,7 +24,7 @@ section input {
 	margin-bottom: 10px;
 }
 
-#searchText, #resultText {
+#searchText, #resultText, #resultText2 {
 	height: 10px;
 	width: 250px;
 }

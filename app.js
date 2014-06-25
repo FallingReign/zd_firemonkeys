@@ -6,14 +6,17 @@
         LOGO                    : 'null',
 		PLAYER_ID               : 'null',
 		LEVEL 					: '',
-		RESULT 					: '',
+		SFP_REIMSTR 			: [],
+		RR3_REIMSTR				: [],
 		SFP						: '',
 		RR3						: '',
 		REGEX					: /\d+/,
 		purchase_data			: [{
 			'simoleons'			: [],
 			'lifepoints'		: [],
-			'socialpoints'		: []
+			'socialpoints'		: [],
+			'gold'				: [],
+			'card'				: []
 		}],
 		reimbursement_list      : []
 
@@ -45,15 +48,19 @@
     	this.resources.purchase_data.simoleons = this.csvToJSON(this.setting('purchase_simoleons'));
     	this.resources.purchase_data.lifepoints = this.csvToJSON(this.setting('purchase_lifepoints'));
     	this.resources.purchase_data.socialpoints = this.csvToJSON(this.setting('purchase_socialpoints'));
+    	this.resources.purchase_data.gold = this.csvToJSON(this.setting('purchase_gold'));
+    	this.resources.purchase_data.card = this.csvToJSON(this.setting('purchase_money'));
+
 
     	this.$('#resultText').attr("disabled", true);
+    	this.$('#resultText2').attr("disabled", true);
 	    this.$('#clear').attr("disabled", true);
 
  		this.ajax('getUser', this.ticket().requester().id()); // Nick is 465739980
     },
 
 	afterGetUser: function(data) {
-    	alert(data.user.user_fields[this.resources.GAME + "_ccid"]);
+    	//alert(data.user.user_fields[this.resources.GAME + "_ccid"]);
     },
 
 	update: function() {
@@ -76,13 +83,20 @@
 
 		};
 
+    	this.$('#resultText').attr("disabled", true);
+    	this.$('#resultText2').attr("disabled", true);
+	    this.$('#clear').attr("disabled", true);
+
 		this.renderContent();
 	},
 
 	clearList: function () {
 		this.resources.reimbursement_list = [];
+		this.resources.SFP_REIMSTR = [];
+		this.resources.RR3_REIMSTR = [];
 		this.update();
 		this.$('#resultText').attr("disabled", true);
+		this.$('#resultText2').attr("disabled", true);
     	this.$('#clear').attr("disabled", true);
 
 	},
@@ -132,11 +146,14 @@
 	   			minLength: 0,
 	    	});
 	    };
+
     },
 	
 	addToList: function() {
 		this.$('#resultText').attr("disabled", false);
+		this.$('#resultText2').attr("disabled", false);
     	this.$('#clear').attr("disabled", false);
+
 		// Adds the searched packs to a list
 		for (index = 0; index < this.resources.reimbursement_list.length; ++index) {
 			if (this.resources.reimbursement_list[index].item_name == this.$('#searchText').val()){
@@ -169,15 +186,23 @@
 	},
 
 	reimResult: function() {
-		//_.each(this.resources.reimbursement_list, function(e, item){});
-
 		var result = [];
 
 		_.each(this.resources.reimbursement_list, function(field) {
-      		result.push(field.type + ":" + parseInt(field.value) * field.qty);
+			if (field.type == 'gold') {
+				result.push("type:wrenchs,qty:" + parseInt(field.value) * field.qty);
+			} else if (field.type == 'card'){
+				result.push("type:money,qty:" + parseInt(field.value) * field.qty);
+			} else {
+      			result.push(field.type + ":" + parseInt(field.value) * field.qty);
+      		};
     	});
 
-		this.resources.RESULT = result.join(", ");
+		if (this.resources.GAME == 'sfp') {
+			this.resources.SFP_REIMSTR = result.join(", ");
+		} else {
+			this.resources.RR3_REIMSTR = result;
+		}
 	},
 
 	csvToArray: function(strData, strDelimiter) {

@@ -31,12 +31,19 @@
 	<div class="reimbursement_list">
 		<ul>
 			{{#each reimbursement_list}}
-			<li>{{item_name}}<span class="float_right">{{qty}}</span></li>
+			<li>{{item_name}}<span class="float_right">{{qty}}</li>
 			{{/each}}
 		</ul>
 	</div>
 	<div>
-		<input id="resultText" type="text" value="{{RESULT}}" />
+		{{#if SFP}}
+		<input id="resultText" type="text" value="{{SFP_REIMSTR}}" />
 		<input class="float_right" id="clear" type="button" value="Clear"/>
+		{{/if}}
+		{{#if RR3}}
+		<input id="resultText" type="text" value="{{RR3_REIMSTR.[0]}}" />
+		<input id="resultText2" type="text" value="{{RR3_REIMSTR.[1]}}" />
+		<input class="float_right" id="clear" type="button" value="Clear"/>
+		{{/if}}
 	</div>
 </section>
