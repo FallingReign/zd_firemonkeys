@@ -29,11 +29,17 @@
 	          	dataType: 'json'
 	        };
 	    },
+	    'getUser': function(id) {
+	        return {
+	        	url: helpers.fmt("/api/v2/users/%@.json?include=identities,organizations", id),
+	          	dataType: 'json'
+	        };
+	    },
     },
 
     events: {
     	'app.activated'						      			: 'init',
-		'ticket.custom_field_{{field_game}}.changed'    	: 'update',
+		'ticket.custom_field_{{field_game}}.changed'    	: 'init',
 		'ticket.custom_field_{{field_player_id}}.changed'   : 'update',
 		'click #submit'							  			: 'addToList',
 		'click #clear'										: 'clearList',
@@ -51,16 +57,21 @@
     	this.resources.purchase_data.gold = this.csvToJSON(this.setting('purchase_gold'));
     	this.resources.purchase_data.card = this.csvToJSON(this.setting('purchase_money'));
 
-
-    	this.$('#resultText').attr("disabled", true);
-    	this.$('#resultText2').attr("disabled", true);
-	    this.$('#clear').attr("disabled", true);
-
  		this.ajax('getUser', this.ticket().requester().id()); // Nick is 465739980
     },
 
 	afterGetUser: function(data) {
-    	//alert(data.user.user_fields[this.resources.GAME + "_ccid"]);
+    	var player_id = this.resources.REGEX.exec(this.ticket().customField("custom_field_" + this.setting('field_player_id')));
+    	this.resources.PLAYER_ID = data.user.user_fields[this.resources.GAME + "_ccid"];
+
+    	if (!this.resources.PLAYER_ID && player_id)
+    	{
+    		this.resources.PLAYER_ID = player_id;
+
+    		//TODO update user with new Player ID from ticket
+    	}
+
+    	this.update();
     },
 
 	update: function() {
@@ -69,7 +80,7 @@
 		// Updates the Player ID dynamically as well.
 		this.resources.GAME = this.ticket().customField("custom_field_" + this.setting('field_game'));
         this.resources.LOGO = this.resources.GAME + "-logo.png";
-		this.resources.PLAYER_ID = this.resources.REGEX.exec(this.ticket().customField("custom_field_" + this.setting('field_player_id')));
+		//this.resources.PLAYER_ID = this.resources.REGEX.exec(this.ticket().customField("custom_field_" + this.setting('field_player_id')));
 
 		// Sets value of game to true to display game specific content
 		// Kind of sloppy, want to find better way
@@ -83,11 +94,19 @@
 
 		};
 
-    	this.$('#resultText').attr("disabled", true);
-    	this.$('#resultText2').attr("disabled", true);
-	    this.$('#clear').attr("disabled", true);
-
 		this.renderContent();
+
+		if (this.resources.reimbursement_list[0])
+		{
+	    	this.$('#resultText').attr("disabled", false);
+	    	this.$('#resultText2').attr("disabled", false);
+		    this.$('#clear').attr("disabled", false);
+		} else {
+	    	this.$('#resultText').attr("disabled", true);
+	    	this.$('#resultText2').attr("disabled", true);
+		    this.$('#clear').attr("disabled", true);
+		}
+
 	},
 
 	clearList: function () {
@@ -95,9 +114,6 @@
 		this.resources.SFP_REIMSTR = [];
 		this.resources.RR3_REIMSTR = [];
 		this.update();
-		this.$('#resultText').attr("disabled", true);
-		this.$('#resultText2').attr("disabled", true);
-    	this.$('#clear').attr("disabled", true);
 
 	},
 
