@@ -48,16 +48,16 @@
       "default"         : "name,simoleons,lifepoints,socialpoints\ncurrency,piggybank,box,0\n,lotus,0,box,0"
     },
     {
-      "name"            : "purchase_gold",
+      "name"            : "purchase_wrench",
       "type"            : "text",
       "required"        : true,
-      "default"         : "handful,pocketful,pile,stack,heap,truckload\n10,30,65,150,400,1000"
+      "default"         : "handful,pocketful,pile,stack,heap,truckload\n16,42,87,183,476,1019"
     },
     {
       "name"            : "purchase_money",
       "type"            : "text",
       "required"        : true,
-      "default"         : "grey,blue,black,silver,gold,platinum\n50000,140000,300000,700000,2000000,5000000"
+      "default"         : "everyday,reliant,esteem,prestige,infinity,obsidian\n50000,140000,300000,700000,2000000,5000000"
     }]
 
 }

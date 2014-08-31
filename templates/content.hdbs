@@ -1,5 +1,9 @@
 <section id="header">
+	{{#if GAME}}
 	<img id="logo" src="{{assetURL LOGO}}" />
+	{{else}}
+	<h4 style="padding-top:30px">Please select a game</h4>
+	{{/if}}
 
 	<ul>
 		{{#if SFP}}
@@ -20,6 +24,7 @@
 </section>
 
 <section id="content">
+	{{#if GAME}}
 	<div class="search">
 		<ul>
 			<li>
@@ -36,14 +41,8 @@
 		</ul>
 	</div>
 	<div>
-		{{#if SFP}}
-		<input id="resultText" type="text" value="{{SFP_REIMSTR}}" />
+		<input id="resultText" type="text" value="{{REIMSTR}}" />
 		<input class="float_right" id="clear" type="button" value="Clear"/>
-		{{/if}}
-		{{#if RR3}}
-		<input id="resultText" type="text" value="{{RR3_REIMSTR.[0]}}" />
-		<input id="resultText2" type="text" value="{{RR3_REIMSTR.[1]}}" />
-		<input class="float_right" id="clear" type="button" value="Clear"/>
-		{{/if}}
 	</div>
+	{{/if}}
 </section>

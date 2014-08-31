@@ -6,8 +6,9 @@
         LOGO                    : 'null',
 		PLAYER_ID               : 'null',
 		LEVEL 					: '',
-		SFP_REIMSTR 			: [],
-		RR3_REIMSTR				: [],
+		SFP_REIMSTR 			: '',
+		RR3_REIMSTR				: '',
+		REIMSTR					: '',
 		SFP						: '',
 		RR3						: '',
 		REGEX					: /\d+/,
@@ -15,8 +16,8 @@
 			'simoleons'			: [],
 			'lifepoints'		: [],
 			'socialpoints'		: [],
-			'gold'				: [],
-			'card'				: []
+			'wrench'			: [],
+			'money'				: []
 		}],
 		reimbursement_list      : []
 
@@ -54,8 +55,8 @@
     	this.resources.purchase_data.simoleons = this.csvToJSON(this.setting('purchase_simoleons'));
     	this.resources.purchase_data.lifepoints = this.csvToJSON(this.setting('purchase_lifepoints'));
     	this.resources.purchase_data.socialpoints = this.csvToJSON(this.setting('purchase_socialpoints'));
-    	this.resources.purchase_data.gold = this.csvToJSON(this.setting('purchase_gold'));
-    	this.resources.purchase_data.card = this.csvToJSON(this.setting('purchase_money'));
+    	this.resources.purchase_data.wrench = this.csvToJSON(this.setting('purchase_gold'));
+    	this.resources.purchase_data.money = this.csvToJSON(this.setting('purchase_money'));
 
  		this.ajax('getUser', this.ticket().requester().id()); // Nick is 465739980
     },
@@ -111,10 +112,8 @@
 
 	clearList: function () {
 		this.resources.reimbursement_list = [];
-		this.resources.SFP_REIMSTR = [];
-		this.resources.RR3_REIMSTR = [];
+		this.resources.REIMSTR = '';
 		this.update();
-
 	},
 
     renderContent: function() {				
@@ -153,12 +152,12 @@
 			    		 'Stack of Gold',
 			    		 'Heap of Gold',
 			    		 'Truckload of Gold',
-			    		 'Grey Card',
-			    		 'Blue Card',
-			    		 'Black Card',
-			    		 'Silver Card',
-			    		 'Gold Card',
-			    		 'Platinum Card'],
+			    		 'Everyday Card',
+			    		 'Reliant Card',
+			    		 'Esteem Card',
+			    		 'Prestige Card',
+			    		 'Infinity Card',
+			    		 'Obsidian Card'],
 	   			minLength: 0,
 	    	});
 	    };
@@ -189,6 +188,12 @@
 		var level = 1;
 		if (lastWord == 'simoleons') {
 			level = this.resources.LEVEL = this.$('#sim_level').val();
+		} 
+		else if (lastWord == 'gold') {
+			lastWord = 'wrench';
+		}
+		else if (lastWord == 'card') {
+			lastWord = 'money';
 		}
 
 		try {
@@ -202,23 +207,34 @@
 	},
 
 	reimResult: function() {
-		var result = [];
+
+		var result = {}
 
 		_.each(this.resources.reimbursement_list, function(field) {
-			if (field.type == 'gold') {
-				result.push("type:wrenchs,qty:" + parseInt(field.value) * field.qty);
-			} else if (field.type == 'card'){
-				result.push("type:money,qty:" + parseInt(field.value) * field.qty);
-			} else {
-      			result.push(field.type + ":" + parseInt(field.value) * field.qty);
-      		};
-    	});
+			if (!result[field.type]) {
+				var a = {}
+				a[String(field.type)] = {'type' : String(field.type), 'qty' : 0};
+				_.extend(result, a);
+			}
 
-		if (this.resources.GAME == 'sfp') {
-			this.resources.SFP_REIMSTR = result.join(", ");
-		} else {
-			this.resources.RR3_REIMSTR = result;
+			result[field.type].qty = parseInt(field.value) * field.qty;
+		});
+
+		var ds = ["", ":", ", "]; //pre, post, and delim strings
+		
+		if (this.resources.GAME == 'rr3') {
+			ds[0] = "type:";
+			ds[1] = " qty:";
+			ds[2] = "; ";
 		}
+
+		var reimstr = [];
+
+		_.each(result, function(field) {
+			reimstr.push(ds[0] + field.type + ds[1] + field.qty);
+		});
+
+		this.resources.REIMSTR = reimstr.join(ds[2]);
 	},
 
 	csvToArray: function(strData, strDelimiter) {
